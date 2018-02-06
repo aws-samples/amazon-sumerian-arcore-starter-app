@@ -1,2 +1,11 @@
 amazon-sumerian-arcore-starter-app
-Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved. 
+Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+**********************
+THIRD PARTY COMPONENTS
+**********************
+This software includes third party software subject to the following copyrights:
+
+Background rendering and utility functions from arcore-android-sdk (https://github.com/google-ar/arcore-android-sdk) - Copyright 2017 Google Inc.
+
+The licenses for these third party components are included in LICENSE.txt
