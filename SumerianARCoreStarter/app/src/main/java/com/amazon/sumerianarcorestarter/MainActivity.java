@@ -59,25 +59,6 @@ public class MainActivity extends AppCompatActivity implements GLSurfaceView.Ren
         mSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0); // Alpha used for plane blending.
         mSurfaceView.setRenderer(this);
         mSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-
-        try {
-            mSession = new Session(/* context= */ this);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        final WebView webView = findViewById(R.id.activity_main_webview);
-        mSumerianConnector = new SumerianConnector(webView, mSession, mSurfaceView);
-
-        // Create config and check if supported.
-        Config config = new Config(mSession);
-        config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
-        if (!mSession.isSupported(config)) {
-            throw new RuntimeException("This device does not support AR");
-        }
-
-        mSession.configure(config);
-        mSumerianConnector.loadUrl(SCENE_URL);
     }
 
     @Override
@@ -100,17 +81,36 @@ public class MainActivity extends AppCompatActivity implements GLSurfaceView.Ren
     protected void onResume() {
         super.onResume();
 
-        // ARCore requires camera permissions to operate. If we did not yet obtain runtime
-        // permission on Android M and above, now is a good time to ask the user for it.
-        if (CameraPermissionHelper.hasCameraPermission(this)) {
-            if (mSession != null) {
-                // Note that order matters - see the note in onPause(), the reverse applies here.
-                mSession.resume();
+        if (mSession == null) {
+            // ARCore requires camera permissions to operate. If we did not yet obtain runtime
+            // permission on Android M and above, now is a good time to ask the user for it.
+            if (!CameraPermissionHelper.hasCameraPermission(this)) {
+                CameraPermissionHelper.requestCameraPermission(this);
+                return;
             }
-            mSurfaceView.onResume();
-        } else {
-            CameraPermissionHelper.requestCameraPermission(this);
+
+            try {
+                mSession = new Session(/* context= */ this);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+            final WebView webView = findViewById(R.id.activity_main_webview);
+            mSumerianConnector = new SumerianConnector(webView, mSession, mSurfaceView);
+
+            // Create config and check if supported.
+            Config config = new Config(mSession);
+            config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
+            if (!mSession.isSupported(config)) {
+                throw new RuntimeException("This device does not support AR");
+            }
+
+            mSession.configure(config);
+            mSumerianConnector.loadUrl(SCENE_URL);
         }
+
+        mSession.resume();
+        mSurfaceView.onResume();
     }
 
     @Override

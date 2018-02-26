@@ -21,7 +21,7 @@ import com.google.ar.core.HitResult;
 import com.google.ar.core.LightEstimate;
 import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
-import com.google.ar.core.Trackable;
+import com.google.ar.core.TrackingState;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,7 +65,7 @@ class SumerianConnector {
         final Frame frame = mSession.update();
         final Camera camera = frame.getCamera();
 
-        if (camera.getTrackingState() == Trackable.TrackingState.PAUSED) {
+        if (camera.getTrackingState() == TrackingState.PAUSED) {
             return;
         }
 
@@ -78,7 +78,7 @@ class SumerianConnector {
         HashMap<String, float[]> anchorMap = new HashMap<>();
 
         for (Anchor anchor : mSession.getAllAnchors()) {
-            if (anchor.getTrackingState() != Trackable.TrackingState.TRACKING) {
+            if (anchor.getTrackingState() != TrackingState.TRACKING) {
                 continue;
             }
 
