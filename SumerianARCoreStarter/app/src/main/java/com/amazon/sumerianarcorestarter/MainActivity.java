@@ -95,18 +95,16 @@ public class MainActivity extends AppCompatActivity implements GLSurfaceView.Ren
             }
 
             try {
-                if (mSession == null) {
-                    switch (ArCoreApk.getInstance().requestInstall(this, mUserRequestedInstall)) {
-                        case INSTALLED:
-                            // Success, create the AR session.
-                            mSession = new Session(this);
-                            break;
-                        case INSTALL_REQUESTED:
-                            // Ensures next invocation of requestInstall() will either return
-                            // INSTALLED or throw an exception.
-                            mUserRequestedInstall = false;
-                            return;
-                    }
+                switch (ArCoreApk.getInstance().requestInstall(this, mUserRequestedInstall)) {
+                    case INSTALLED:
+                        // Success, create the AR session.
+                        mSession = new Session(this);
+                        break;
+                    case INSTALL_REQUESTED:
+                        // Ensures next invocation of requestInstall() will either return
+                        // INSTALLED or throw an exception.
+                        mUserRequestedInstall = false;
+                        return;
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
