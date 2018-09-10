@@ -32,6 +32,8 @@ import android.widget.Toast;
 import com.google.ar.core.Config;
 import com.google.ar.core.Frame;
 import com.google.ar.core.Session;
+import com.google.ar.core.ArCoreApk;
+import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -43,6 +45,9 @@ public class MainActivity extends AppCompatActivity implements GLSurfaceView.Ren
     private GLSurfaceView mSurfaceView;
     private Session mSession;
     private SumerianConnector mSumerianConnector;
+
+    // Set to true ensures requestInstall() triggers installation if necessary.
+    private boolean mUserRequestedInstall = true;
 
     private final BackgroundRenderer mBackgroundRenderer = new BackgroundRenderer();
 
@@ -90,7 +95,17 @@ public class MainActivity extends AppCompatActivity implements GLSurfaceView.Ren
             }
 
             try {
-                mSession = new Session(/* context= */ this);
+                switch (ArCoreApk.getInstance().requestInstall(this, mUserRequestedInstall)) {
+                    case INSTALLED:
+                        // Success, create the AR session.
+                        mSession = new Session(this);
+                        break;
+                    case INSTALL_REQUESTED:
+                        // Ensures next invocation of requestInstall() will either return
+                        // INSTALLED or throw an exception.
+                        mUserRequestedInstall = false;
+                        return;
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -98,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements GLSurfaceView.Ren
             final WebView webView = findViewById(R.id.activity_main_webview);
             mSumerianConnector = new SumerianConnector(webView, mSession, mSurfaceView);
 
-            // Create config and check if supported.
+            // Create config and check if camera access that is not blocking is supported.
             Config config = new Config(mSession);
             config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
             if (!mSession.isSupported(config)) {
