@@ -22,6 +22,7 @@ import com.google.ar.core.LightEstimate;
 import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
 import com.google.ar.core.TrackingState;
+import com.google.ar.core.exceptions.CameraNotAvailableException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,7 +63,13 @@ class SumerianConnector {
     }
 
     void update() {
-        final Frame frame = mSession.update();
+        final Frame frame;
+        try {
+            frame = mSession.update();
+        } catch (CameraNotAvailableException e) {
+            e.printStackTrace();
+            return;
+        }
         final Camera camera = frame.getCamera();
 
         if (camera.getTrackingState() == TrackingState.PAUSED) {
@@ -94,7 +101,12 @@ class SumerianConnector {
         }
 
         if (frame.getLightEstimate().getState() != LightEstimate.State.NOT_VALID) {
-            final String lightEstimateUpdateScript = "ARCoreBridge.lightingEstimateUpdate(" + String.valueOf(frame.getLightEstimate().getPixelIntensity()) + ");";
+            final float[] colorCorrectionRgba = new float[4];
+            frame.getLightEstimate().getColorCorrection(colorCorrectionRgba, 0);
+            convertRgbaToTemperature(colorCorrectionRgba);
+
+            final String lightEstimateUpdateScript = "ARCoreBridge.lightingEstimateUpdate(" +
+                    String.valueOf(frame.getLightEstimate().getPixelIntensity()) + ");";
             evaluateWebViewJavascript(lightEstimateUpdateScript);
         }
     }
@@ -120,6 +132,20 @@ class SumerianConnector {
         mainHandler.postAtFrontOfQueue(webViewUpdate);
     }
 
+    private int convertRgbaToTemperature(float[] colorCorrectionRgba) {
+        // sRGB Colorspace
+        double tristimulusX = (0.4124564 * colorCorrectionRgba[0]) + (0.3575761 * colorCorrectionRgba[1]) + (0.1804375 * colorCorrectionRgba[2]);
+        double tristimulusY = (0.2126729 * colorCorrectionRgba[0]) + (0.7151522 * colorCorrectionRgba[1]) + (0.0721750 * colorCorrectionRgba[2]);
+        double tristimulusZ = (0.0193339 * colorCorrectionRgba[0]) + (0.1191920 * colorCorrectionRgba[1]) + (0.9503041 * colorCorrectionRgba[2]);
+
+        double normalizedX = tristimulusX / (tristimulusX + tristimulusY + tristimulusZ);
+        double normalizedY = tristimulusY / (tristimulusX + tristimulusY + tristimulusZ);
+
+        double n = (normalizedX - 0.3320) / (0.1858 - normalizedY);
+        int correctedColorTemperature = (int)((449 * Math.pow(n, 3)) + (3525 * Math.pow(n, 2)) + (6823.3 * n) + (5520.33));
+        return correctedColorTemperature;
+    }
+
     private class BridgeInterface {
 
         private float[] mHitTestResultPose = new float[16];
@@ -136,7 +162,12 @@ class SumerianConnector {
                     final float hitTestX = screenX * mWebView.getWidth();
                     final float hitTestY = screenY * mWebView.getHeight();
 
-                    List<HitResult> hitTestResults = mSession.update().hitTest(hitTestX, hitTestY);
+                    List<HitResult> hitTestResults = null;
+                    try {
+                        hitTestResults = mSession.update().hitTest(hitTestX, hitTestY);
+                    } catch (CameraNotAvailableException e) {
+                        e.printStackTrace();
+                    }
 
                     final String scriptString;
 

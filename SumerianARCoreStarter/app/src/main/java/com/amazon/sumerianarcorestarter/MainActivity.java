@@ -33,6 +33,7 @@ import com.google.ar.core.Config;
 import com.google.ar.core.Frame;
 import com.google.ar.core.Session;
 import com.google.ar.core.ArCoreApk;
+import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -124,7 +125,11 @@ public class MainActivity extends AppCompatActivity implements GLSurfaceView.Ren
             mSumerianConnector.loadUrl(SCENE_URL);
         }
 
-        mSession.resume();
+        try {
+            mSession.resume();
+        } catch (CameraNotAvailableException e) {
+            e.printStackTrace();
+        }
         mSurfaceView.onResume();
     }
 
