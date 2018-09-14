@@ -15,6 +15,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.google.ar.core.Anchor;
+import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Camera;
 import com.google.ar.core.Frame;
 import com.google.ar.core.HitResult;
@@ -109,6 +110,14 @@ class SumerianConnector {
                     String.valueOf(frame.getLightEstimate().getPixelIntensity()) + ");";
             evaluateWebViewJavascript(lightEstimateUpdateScript);
         }
+    }
+
+    private void imageAnchorCreated(AugmentedImage augmentedImage) {
+        final float[] imageAnchorPoseMatrix = new float[16];
+        augmentedImage.getCenterPose().toMatrix(imageAnchorPoseMatrix, 0);
+        final String imageAnchorResponseScript = "ARCoreBridge.imageAnchorResponse('" +
+                augmentedImage.getName() +"', '"+ serializeArray(imageAnchorPoseMatrix) + "');";
+        evaluateWebViewJavascript(imageAnchorResponseScript);
     }
 
     private String serializeArray(float[] array) {
