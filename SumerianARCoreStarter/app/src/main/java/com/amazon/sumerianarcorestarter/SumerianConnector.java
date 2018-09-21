@@ -143,15 +143,15 @@ class SumerianConnector {
 
     private int convertRgbaToTemperature(float[] colorCorrectionRgba) {
         // sRGB Colorspace
-        double tristimulusX = (0.4124564 * colorCorrectionRgba[0]) + (0.3575761 * colorCorrectionRgba[1]) + (0.1804375 * colorCorrectionRgba[2]);
-        double tristimulusY = (0.2126729 * colorCorrectionRgba[0]) + (0.7151522 * colorCorrectionRgba[1]) + (0.0721750 * colorCorrectionRgba[2]);
-        double tristimulusZ = (0.0193339 * colorCorrectionRgba[0]) + (0.1191920 * colorCorrectionRgba[1]) + (0.9503041 * colorCorrectionRgba[2]);
+        final double tristimulusX = (0.4124564 * colorCorrectionRgba[0]) + (0.3575761 * colorCorrectionRgba[1]) + (0.1804375 * colorCorrectionRgba[2]);
+        final double tristimulusY = (0.2126729 * colorCorrectionRgba[0]) + (0.7151522 * colorCorrectionRgba[1]) + (0.0721750 * colorCorrectionRgba[2]);
+        final double tristimulusZ = (0.0193339 * colorCorrectionRgba[0]) + (0.1191920 * colorCorrectionRgba[1]) + (0.9503041 * colorCorrectionRgba[2]);
 
-        double normalizedX = tristimulusX / (tristimulusX + tristimulusY + tristimulusZ);
-        double normalizedY = tristimulusY / (tristimulusX + tristimulusY + tristimulusZ);
+        final double normalizedX = tristimulusX / (tristimulusX + tristimulusY + tristimulusZ);
+        final double normalizedY = tristimulusY / (tristimulusX + tristimulusY + tristimulusZ);
 
-        double n = (normalizedX - 0.3320) / (0.1858 - normalizedY);
-        int correctedColorTemperature = (int)((449 * Math.pow(n, 3)) + (3525 * Math.pow(n, 2)) + (6823.3 * n) + (5520.33));
+        final double n = (normalizedX - 0.3320) / (0.1858 - normalizedY);
+        final int correctedColorTemperature = (int)((449 * Math.pow(n, 3)) + (3525 * Math.pow(n, 2)) + (6823.3 * n) + (5520.33));
         return correctedColorTemperature;
     }
 
