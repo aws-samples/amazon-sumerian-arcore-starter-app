@@ -104,10 +104,10 @@ class SumerianConnector {
         if (frame.getLightEstimate().getState() != LightEstimate.State.NOT_VALID) {
             final float[] colorCorrectionRgba = new float[4];
             frame.getLightEstimate().getColorCorrection(colorCorrectionRgba, 0);
-            convertRgbaToTemperature(colorCorrectionRgba);
-
+            
             final String lightEstimateUpdateScript = "ARCoreBridge.lightingEstimateUpdate(" +
-                    String.valueOf(frame.getLightEstimate().getPixelIntensity()) + ");";
+                    String.valueOf(frame.getLightEstimate().getPixelIntensity()) + ", " +
+                    convertRgbaToTemperature(colorCorrectionRgba) + ");";
             evaluateWebViewJavascript(lightEstimateUpdateScript);
         }
     }
