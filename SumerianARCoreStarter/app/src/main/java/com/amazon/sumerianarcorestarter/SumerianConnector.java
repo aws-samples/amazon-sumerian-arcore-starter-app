@@ -112,7 +112,7 @@ class SumerianConnector {
         }
     }
 
-    private void imageAnchorCreated(AugmentedImage augmentedImage) {
+    void imageAnchorCreated(AugmentedImage augmentedImage) {
         final float[] imageAnchorPoseMatrix = new float[16];
         augmentedImage.getCenterPose().toMatrix(imageAnchorPoseMatrix, 0);
         final String imageAnchorResponseScript = "ARCoreBridge.imageAnchorResponse('" +
