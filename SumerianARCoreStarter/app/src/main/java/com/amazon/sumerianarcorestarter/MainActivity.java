@@ -19,6 +19,8 @@
 
 package com.amazon.sumerianarcorestarter;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.support.v7.app.AppCompatActivity;
@@ -29,19 +31,24 @@ import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+import com.google.ar.core.AugmentedImageDatabase;
 import com.google.ar.core.Config;
 import com.google.ar.core.Frame;
 import com.google.ar.core.Session;
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.exceptions.CameraNotAvailableException;
-import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class MainActivity extends AppCompatActivity implements GLSurfaceView.Renderer {
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String SCENE_URL = "https://d1550wa51vq95s.cloudfront.net/3d19ea8069a94904849e8edeabe3ada0.scene/?arMode=true";
+    private static final String SCENE_URL = "https://536650aef20d473e922aefaea844506e.us-east-2.sumerian.aws/?arMode=true";
+    private static final String IMAGE_FILENAME = "SumerianAnchorImage.png";
+    private static final float IMAGE_WIDTH_IN_METERS = (float)0.18;
 
     private GLSurfaceView mSurfaceView;
     private Session mSession;
@@ -51,6 +58,19 @@ public class MainActivity extends AppCompatActivity implements GLSurfaceView.Ren
     private boolean mUserRequestedInstall = true;
 
     private final BackgroundRenderer mBackgroundRenderer = new BackgroundRenderer();
+
+    private AugmentedImageDatabase createImageDatabase(Session mSession) {
+        AugmentedImageDatabase imageDatabase = new AugmentedImageDatabase(mSession);
+        Bitmap bitmap = null;
+        try (InputStream inputStream = getAssets().open(IMAGE_FILENAME)) {
+            bitmap = BitmapFactory.decodeStream(inputStream);
+        } catch (IOException e) {
+            Log.e(TAG, "I/O exception loading augmented image bitmap.", e);
+        }
+
+        imageDatabase.addImage("SumerianAnchorImage", bitmap, IMAGE_WIDTH_IN_METERS);
+        return imageDatabase;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements GLSurfaceView.Ren
                 throw new RuntimeException("This device does not support AR");
             }
 
+            config.setAugmentedImageDatabase(createImageDatabase(mSession));
             mSession.configure(config);
             mSumerianConnector.loadUrl(SCENE_URL);
         }
