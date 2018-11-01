@@ -29,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -109,6 +110,16 @@ class SumerianConnector {
                     String.valueOf(frame.getLightEstimate().getPixelIntensity()) + ", " +
                     convertRgbaToTemperature(colorCorrectionRgba) + ");";
             evaluateWebViewJavascript(lightEstimateUpdateScript);
+        }
+
+        // Image Recognition
+        Collection<AugmentedImage> updatedAugmentedImages = frame.getUpdatedTrackables(AugmentedImage.class);
+        for (AugmentedImage img : updatedAugmentedImages) {
+            if (img.getTrackingState() == TrackingState.TRACKING) {
+                if (img.getName().equals("SumerianAnchorImage")) {
+                    imageAnchorCreated(img);
+                }
+            }
         }
     }
 
