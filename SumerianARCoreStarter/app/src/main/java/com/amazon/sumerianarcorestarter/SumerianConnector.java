@@ -49,6 +49,7 @@ class SumerianConnector {
 
         WebSettings webSettings = mWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
+        webSettings.setMediaPlaybackRequiresUserGesture(false);
         mWebView.addJavascriptInterface(new BridgeInterface(), "Android");
 
         this.mWebView.setWebViewClient(new WebViewClient() {
