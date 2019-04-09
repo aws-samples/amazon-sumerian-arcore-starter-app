@@ -1,0 +1,11 @@
+*.iml
+SumerianARCoreStarter/.gradle
+SumerianARCoreStarter/.idea
+SumerianARCoreStarter/
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+SumerianARCoreStarter/build
+/captures
+.externalNativeBuild
