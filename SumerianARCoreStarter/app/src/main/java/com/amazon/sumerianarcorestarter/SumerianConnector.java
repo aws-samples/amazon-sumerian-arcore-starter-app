@@ -10,9 +10,11 @@ import android.opengl.GLSurfaceView;
 import android.os.Handler;
 import android.os.Looper;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.PermissionRequest;
 
 import com.google.ar.core.Anchor;
 import com.google.ar.core.AugmentedImage;
@@ -51,6 +53,14 @@ class SumerianConnector {
         webSettings.setJavaScriptEnabled(true);
         webSettings.setMediaPlaybackRequiresUserGesture(false);
         mWebView.addJavascriptInterface(new BridgeInterface(), "Android");
+
+        mWebView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onPermissionRequest(PermissionRequest request) {
+                request.grant(request.getResources());
+            }
+        });
+
 
         this.mWebView.setWebViewClient(new WebViewClient() {
             @Override
