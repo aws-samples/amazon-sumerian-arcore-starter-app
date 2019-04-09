@@ -1,11 +1,12 @@
 *.iml
+.externalNativeBuild
+.github
+.idea
 SumerianARCoreStarter/.gradle
 SumerianARCoreStarter/.idea
-SumerianARCoreStarter/
+SumerianARCoreStarter/build
 /local.properties
 /.idea/workspace.xml
 /.idea/libraries
 .DS_Store
-SumerianARCoreStarter/build
 /captures
-.externalNativeBuild
