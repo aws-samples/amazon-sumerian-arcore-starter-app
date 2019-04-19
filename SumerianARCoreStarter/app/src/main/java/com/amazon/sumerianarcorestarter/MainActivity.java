@@ -46,7 +46,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class MainActivity extends AppCompatActivity implements GLSurfaceView.Renderer {
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String SCENE_URL = "https://us-west-2.sumerian.aws/bd1cded5426d42c78475ada2d21b5bc9.scene/?arMode=true";
+    private static final String SCENE_URL = "https://d1550wa51vq95s.cloudfront.net/3d19ea8069a94904849e8edeabe3ada0.scene/?arMode=true";
     private static final String IMAGE_FILENAME = "SumerianAnchorImage.png";
     private static final float IMAGE_WIDTH_IN_METERS = (float)0.18;
 
