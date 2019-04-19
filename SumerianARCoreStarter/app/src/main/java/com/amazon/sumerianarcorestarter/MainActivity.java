@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements GLSurfaceView.Ren
                 CameraPermissionHelper.requestCameraPermission(this);
                 return;
             }
-            // ARCore requires Mic permissions to operate. If we did not yet obtain runtime
+            // ARCore requires microphone permissions to operate. If we did not yet obtain runtime
             // permission on Android M and above, now is a good time to ask the user for it.
             if (!MicPermissionHelper.hasMicPermission(this)) {
                 MicPermissionHelper.requestMicPermission(this);
@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements GLSurfaceView.Ren
         }
         if (!MicPermissionHelper.hasMicPermission(this)) {
             Toast.makeText(this,
-                    "Camera permission is needed to run this application", Toast.LENGTH_LONG).show();
+                    "Microphone permission is needed to run this application", Toast.LENGTH_LONG).show();
             if (!MicPermissionHelper.shouldShowRequestPermissionRationale(this)) {
                 // Permission denied with checking "Do not ask again".
                 MicPermissionHelper.launchPermissionSettings(this);
