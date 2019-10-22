@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements GLSurfaceView.Ren
             // Create config and check if camera access that is not blocking is supported.
             Config config = new Config(mSession);
             config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
+            config.setFocusMode(Config.FocusMode.AUTO);
             if (!mSession.isSupported(config)) {
                 throw new RuntimeException("This device does not support AR");
             }
