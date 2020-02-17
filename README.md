@@ -1,15 +1,15 @@
-## amazon-sumerian-arcore-starter-app
+## 亚马逊苏美尔人的arcore入门应用程序
 
-A sample Android project that demonstrates how to create a simple augmented reality experience using Google's ARCore with the Amazon Sumerian service.
+一个示例Android项目，演示了如何使用Google的ARCore和Amazon Sumerian服务创建简单的增强现实体验。
 
 ## License
 
-This library is licensed under the Apache 2.0 License.
+该库已根据Apache 2.0许可获得许可。
 
 ## Important Note
 
-When using Sumerian's [private publishing option](https://aws-amplify.github.io/docs/js/xr) with AWS Amplify, it's necessary to make the hosting page's background transparent, otherwise the default opaque background will occlude the device's camera image. This can be accomplished by executing the following line of Javascript on the hosting page:
+当将Sumerian的[私有发布选项]（https://aws-amplify.github.io/docs/js/xr）与AWS Amplify结合使用时，有必要使托管页面的背景透明，否则默认的不透明背景将遮挡设备的背景。相机图像。这可以通过在托管页面上执行以下Javascript行来实现：
 
 `document.body.style.backgroundColor = 'transparent';`
 
-or by setting the same property on the page's stylesheet.
+或通过在页面样式表上设置相同的属性。
