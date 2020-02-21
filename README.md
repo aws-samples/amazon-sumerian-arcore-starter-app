@@ -1,4 +1,4 @@
-## 亚马逊苏美尔人的arcore入门应用程序
+## 亚马逊苏美尔人的ARCore入门应用程序
 
 一个示例Android项目，演示了如何使用Google的ARCore和Amazon Sumerian服务创建简单的增强现实体验。
 
