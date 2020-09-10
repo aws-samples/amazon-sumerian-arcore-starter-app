@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements GLSurfaceView.Ren
 
     private GLSurfaceView mSurfaceView;
     private Session mSession;
+    private DisplayRotationHelper displayRotationHelper;
     private SumerianConnector mSumerianConnector;
 
     // Set to true ensures requestInstall() triggers installation if necessary.
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements GLSurfaceView.Ren
         setContentView(R.layout.activity_main);
 
         mSurfaceView = findViewById(R.id.gl_surface_view);
+        displayRotationHelper = new DisplayRotationHelper(/*context=*/ this);
 
         // Set up renderer.
         mSurfaceView.setPreserveEGLContextOnPause(true);
@@ -153,16 +155,18 @@ public class MainActivity extends AppCompatActivity implements GLSurfaceView.Ren
             e.printStackTrace();
         }
         mSurfaceView.onResume();
+        displayRotationHelper.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        // Note that the order matters - GLSurfaceView is paused first so that it does not try
-        // to query the session. If Session is paused before GLSurfaceView, GLSurfaceView may
-        // still call mSession.update() and get a SessionPausedException.
-        mSurfaceView.onPause();
         if (mSession != null) {
+            // Note that the order matters - GLSurfaceView is paused first so that it does not try
+            // to query the session. If Session is paused before GLSurfaceView, GLSurfaceView may
+            // still call mSession.update() and get a SessionPausedException.
+            displayRotationHelper.onPause();
+            mSurfaceView.onPause();
             mSession.pause();
         }
     }
@@ -186,13 +190,12 @@ public class MainActivity extends AppCompatActivity implements GLSurfaceView.Ren
 
         // Create the texture and pass it to ARCore session to be filled during update().
         mBackgroundRenderer.createOnGlThread(/*context=*/this);
-        mSession.setCameraTextureName(mBackgroundRenderer.getTextureId());
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
+        displayRotationHelper.onSurfaceChanged(width, height);
         GLES20.glViewport(0, 0, width, height);
-        mSession.setDisplayGeometry(getSystemService(WindowManager.class).getDefaultDisplay().getRotation(), width, height);
     }
 
     @Override
@@ -204,7 +207,13 @@ public class MainActivity extends AppCompatActivity implements GLSurfaceView.Ren
             return;
         }
 
+        // Notify ARCore session that the view size changed so that the perspective matrix and
+        // the video background can be properly adjusted.
+        displayRotationHelper.updateSessionIfNeeded(mSession);
+
         try {
+            mSession.setCameraTextureName(mBackgroundRenderer.getTextureId());
+
             // Obtain the current frame from ARSession. When the configuration is set to
             // UpdateMode.BLOCKING (it is by default), this will throttle the rendering to the
             // camera framerate.
